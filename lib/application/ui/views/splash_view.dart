@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../../common/presentation/presentation.dart';
+import '../../../common/presentation/presentation.dart';
+import '../../domain/game_data.dart';
 import 'home_view.dart';
 
 class SplashView extends StatefulWidget {
@@ -14,6 +15,7 @@ class SplashView extends StatefulWidget {
 class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
+    GameData.i.initialise();
     _startSplashTimer();
     super.initState();
   }
@@ -39,7 +41,7 @@ class _SplashViewState extends State<SplashView> {
         ).animate().shake(
               curve: Curves.easeOutQuad,
               duration: 3.seconds,
-              hz: 1, 
+              hz: 1,
             ),
       ),
     );

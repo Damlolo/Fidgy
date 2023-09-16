@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../common/presentation/presentation.dart';
-import '../domain/game_config.dart';
-import '../domain/general_manager.dart';
-import 'components/header_widget.dart';
+import '../../../common/presentation/presentation.dart';
+import '../../domain/game_config.dart';
+import '../../domain/general_manager.dart';
+import '../components/header_widget.dart';
 
 class SelectHandView extends StatelessWidget {
   const SelectHandView({super.key});

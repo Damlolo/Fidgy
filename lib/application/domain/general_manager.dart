@@ -1,37 +1,68 @@
-import '../../core/navigation/app_navigator.dart';
-import '../ui/game_view.dart';
-import '../ui/select_hand_view.dart';
-import '../ui/select_level_view.dart';
-import 'game.dart';
+import '../../common/presentation/presentation.dart';
+import '../ui/dialogs/select_level_dialog.dart';
+import '../ui/views/game_view.dart';
+import '../ui/views/select_difficulty_view.dart';
+import '../ui/views/select_hand_view.dart';
 import 'game_config.dart';
+import 'game_controller.dart';
+import 'game_data.dart';
 
 class GeneralManager {
   GeneralManager._();
   static final i = GeneralManager._();
 
-  GameLevel? _level;
+  Difficulty? _difficulty;
+  Hand? _hand;
+  int? _level;
+
   void goHome() {
     AppNavigator.main.popUntilRoute('HomeView');
   }
 
   void play() {
-    AppNavigator.main.push(const SelectLevelView());
-  }
-
-  void selectLevel(GameLevel level) {
-    _level = level;
-
     AppNavigator.main.push(const SelectHandView());
   }
 
   void selectHand(Hand hand) {
-    if (_level == null) return;
-    final config = GameConfig.fromLevel(hand: hand, level: _level!);
+    _hand = hand;
+    AppNavigator.main.push(const SelectDifficultyView());
+  }
+
+  void selectDifficulty(Difficulty difficulty) {
+    _difficulty = difficulty;
+    SelectLevelDialog(difficulty: difficulty, hand: _hand!).open();
+  }
+
+  void selectLevel(int i) {
+    assert(i >= 1 && i <= 15);
+    _level = i;
+
+    final config = GameConfig.fromDifficulty(
+      level: _level!,
+      hand: _hand!,
+      difficulty: _difficulty!,
+    );
     _beginGame(config);
   }
 
+  void nextLevel() {
+    if (_level == null || _level == 15) return;
+    final nextLevel = _level! + 1;
+    selectLevel(nextLevel);
+  }
+
+  void replayLevel() {
+    if (_level == null) return;
+    selectLevel(_level!);
+  }
+
   void _beginGame(GameConfig config) {
-    final game = Game(config);
+    final game = GameController(config);
     AppNavigator.main.push(GameView(game));
+  }
+
+  void gameWon(int score) {
+    final record = GameRecord(_hand!, _difficulty!, _level!, score);
+    GameData.i.recordScore(record);
   }
 }

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../common/presentation/presentation.dart';
+import '../../../core/theming/app_colors.dart';
+import '../../../core/theming/sizing_ext.dart';
+import '../../domain/game_data.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({
@@ -21,28 +24,31 @@ class HomeHeader extends StatelessWidget {
             horizontal: 104.r,
             vertical: 16.r,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _IconAndCountWidget(
-                onTap: () {},
-                svgPath: 'assets/flame.svg',
-                count: 0,
-                color: AppColors.of(context).textMedium,
-              ),
-              _IconAndCountWidget(
-                onTap: () {},
-                svgPath: 'assets/thumb.svg',
-                count: 0,
-                color: AppColors.of(context).textStrong,
-              ),
-              _IconAndCountWidget(
-                onTap: () {},
-                svgPath: 'assets/gear.svg',
-                count: null,
-                color: AppColors.of(context).textStrong,
-              ),
-            ],
+          child: AppViewBuilder<GameData>(
+            model: GameData.i,
+            builder: (gameData, _) => Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _IconAndCountWidget(
+                  onTap: () {},
+                  svgPath: 'assets/flame.svg',
+                  count: 0,
+                  color: AppColors.of(context).textMedium,
+                ),
+                _IconAndCountWidget(
+                  onTap: () {},
+                  svgPath: 'assets/thumb.svg',
+                  count: gameData.gameCount,
+                  color: AppColors.of(context).textStrong,
+                ),
+                _IconAndCountWidget(
+                  onTap: () {},
+                  svgPath: 'assets/gear.svg',
+                  count: null,
+                  color: AppColors.of(context).textStrong,
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -2,26 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
-import 'app_styles.dart';
 
 class AppTheme {
   final AppColors colors;
   final String headingFontFamily;
   final String bodyFontFamily;
-  final AppStyles styles;
+  // final AppStyles styles;
 
   AppTheme({
     required this.colors,
     required this.headingFontFamily,
     required this.bodyFontFamily,
-  }) : styles = AppStyles(
-          colors: colors,
-          headingFontFamily: headingFontFamily,
-          bodyFontFamily: bodyFontFamily,
-        );
+  }) ;
 
   ThemeData get themeData => ThemeData(
-        extensions: [colors, styles],
+        extensions: [colors],
         textTheme: GoogleFonts.mochiyPopOneTextTheme(),
         primaryTextTheme: GoogleFonts.mochiyPopOneTextTheme(),
         scaffoldBackgroundColor: colors.backgroundColor,

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../../common/presentation/presentation.dart';
-import '../domain/game.dart';
-import '../domain/game_config.dart';
-import 'components/button_widget.dart';
+import '../../../common/presentation/presentation.dart';
+import '../../domain/game_clock.dart';
+import '../../domain/game_config.dart';
+import '../../domain/game_controller.dart';
+import '../components/button_widget.dart';
 
 class GameView extends StatelessWidget {
   const GameView(this.game, {super.key});
-  final Game game;
+  final GameController game;
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +30,12 @@ class GameView extends StatelessWidget {
                 children: [
                   LivesMeter(
                     remainingLives: game.remainingLives,
-                    maxLives: game.config.maxFailureAllowed,
+                    maxLives: game.numberOfLives,
                   ),
                   ProgressMeter(
-                    maxTurns: game.config.numberOfTurns,
-                    progress: game.progress,
+                    levelVm: game,
                   ),
-                  TimerDisplay(game.timer),
+                  TimerDisplay(game.clock),
                 ],
               ),
             ),
@@ -126,21 +126,31 @@ class LivesMeter extends StatelessWidget {
 class ProgressMeter extends StatelessWidget {
   const ProgressMeter({
     super.key,
-    required this.maxTurns,
-    required this.progress,
+    required this.levelVm,
   });
 
-  final int maxTurns;
-  final int progress;
+  final GameController levelVm;
+
+  double _starPosition(double width) {
+    final starRange = (levelVm.maxScore - levelVm.firstStarScore) / 2;
+    final adjustedStarNumber = levelVm.numberOfStars - 1;
+    final starScore = levelVm.firstStarScore + (adjustedStarNumber * starRange);
+    final starPosition = (starScore / levelVm.maxScore) * (width - 32.r);
+    return starPosition;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final width = 390.w;
+    final height = 72.r;
+
     return SizedBox(
-      height: 72.r,
-      width: 371.w,
+      height: height,
+      width: width,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(36.r),
         child: Stack(
+          clipBehavior: Clip.none,
           children: [
             Positioned.fill(
               child: Container(
@@ -159,13 +169,59 @@ class ProgressMeter extends StatelessWidget {
                   color: AppColors.of(context).mainGreen,
                   borderRadius: BorderRadius.circular(36.r),
                 ),
-              ).animate(target: progress / maxTurns).scaleX(
+              )
+                  .animate(target: levelVm.currentRawScore / levelVm.maxScore)
+                  .scaleX(
                     begin: 0.1,
-                    duration: 1.seconds,
+                    duration: 15.seconds,
                     alignment: Alignment.centerLeft,
-                    curve: Curves.easeIn,
+                    curve: null,
                   ),
-            )
+            ),
+            // Moving star
+            if (levelVm.numberOfStars != 0)
+              Positioned(
+                left: _starPosition(width),
+                child: Icon(
+                  Icons.star_rounded,
+                  size: 64.r,
+                  color: switch (levelVm.numberOfStars) {
+                    >= 3 => AppColors.of(context).mainGreen,
+                    == 2 => AppColors.of(context).mainBlue,
+                    <= 1 => AppColors.of(context).mainOrange,
+                    _ => null,
+                  },
+                ),
+              ),
+
+            // Star point markers
+            if (levelVm.numberOfStars != 1)
+              Positioned(
+                left: (levelVm.firstStarScore / levelVm.maxScore) * width,
+                child: Container(
+                  width: 10.w,
+                  height: height,
+                  color: AppColors.of(context).mainOrange,
+                ),
+              ),
+            if (levelVm.numberOfStars != 2)
+              Positioned(
+                left: (levelVm.secondStarScore / levelVm.maxScore) * width,
+                child: Container(
+                  width: 10.w,
+                  height: height,
+                  color: AppColors.of(context).mainBlue,
+                ),
+              ),
+            if (levelVm.numberOfStars != 3)
+              Positioned(
+                right: 0,
+                child: Container(
+                  width: 10.w,
+                  height: height,
+                  color: AppColors.of(context).mainYellow,
+                ),
+              ),
           ],
         ),
       ),
@@ -175,7 +231,7 @@ class ProgressMeter extends StatelessWidget {
 
 class TimerDisplay extends StatelessWidget {
   const TimerDisplay(this.timer, {super.key});
-  final TurnTimer timer;
+  final GameClock timer;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -186,12 +242,11 @@ class TimerDisplay extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            // TODO(Majore): add time indicator
             Text(
-              '${timeLeft}s',
+              timeLeft,
               style: TextStyle(
                 fontSize: 54.t,
-                color: timeLeft <= timer.seconds * 0.37
+                color: timer.passedWarningPoint
                     ? AppColors.of(context).mainRed
                     : Colors.black,
               ),

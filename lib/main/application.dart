@@ -3,8 +3,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../common/presentation/presentation.dart';
-import '../core/service_locator/service_locator.dart';
-import '../services/app_lifecycle_service/app_lifecycle_service.dart';
+import '../core/theming/app_colors.dart';
+import '../core/theming/app_theme.dart';
 import '../utilities/constants/constants.dart';
 import '../utilities/mixins/device_orientation_mixin.dart';
 
@@ -17,47 +17,28 @@ class ThisApplication extends StatefulWidget {
 
 class _ThisApplicationState extends State<ThisApplication>
     with DeviceOrientationMixin {
-  late final AppThemeManager _themeManager;
-
   @override
   void initState() {
-    AppLifecycleService.instance.initialise();
-    _themeManager = AppThemeManager(
-      lightTheme: AppTheme(
-        colors: AppColors.defaultColors,
-        headingFontFamily: AppStyles.defaultHeadingFont,
-        bodyFontFamily: AppStyles.defaultBodyFont,
-      ),
-      darkTheme: null,
-      localStore: ServiceLocator.get(),
-      defaultMode: ThemeMode.system,
-    );
-    _themeManager.initialise(context);
     lockToLandscapeOrientation();
     super.initState();
   }
 
   @override
-  void didChangeDependencies() {
-    ScreenUtil.init(context, designSize: const Size(1440, 960));
-    super.didChangeDependencies();
-  }
-
-  @override
   void dispose() {
-    AppLifecycleService.instance.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AppViewBuilder<AppThemeManager>(
-      model: _themeManager,
-      initState: (vm) => vm.initialise(context),
-      builder: (themeManager, _) => MaterialApp(
-        theme: themeManager.lightTheme,
-        darkTheme: themeManager.darkTheme,
-        themeMode: themeManager.themeMode,
+    return ScreenUtilInit(
+      designSize: const Size(1440, 960),
+      minTextAdapt: true,
+      child: MaterialApp(
+        theme: AppTheme(
+          colors: AppColors.defaultColors,
+          bodyFontFamily: '',
+          headingFontFamily: '',
+        ).themeData,
         debugShowCheckedModeBanner: false,
         title: Constants.appName,
         localizationsDelegates: const [

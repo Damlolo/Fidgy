@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../application/ui/splash_view.dart';
+import '../../application/ui/views/splash_view.dart';
 
 abstract class AppRoutes {
   static const dashboardRoute = 'DashboardView';

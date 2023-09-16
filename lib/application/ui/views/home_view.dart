@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../core/theming/sizing_ext.dart';
-import '../domain/general_manager.dart';
-import 'components/button_widget.dart';
-import 'components/header_widget.dart';
+import '../../../common/presentation/presentation.dart';
+import '../../domain/general_manager.dart';
+import '../components/button_widget.dart';
+import '../components/header_widget.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
