@@ -51,8 +51,6 @@ class GameController extends AppViewModel {
 
       if (currentRawScore >= config.passMark) {
         GeneralManager.i.gameWon(displayScore);
-        clock.removeListener(_timerListener);
-        clock.stop();
         LevelCompletedDialog.timeUp(levelVm: this).open();
       } else {
         GameOverDialog.timeUp().open();
@@ -93,7 +91,12 @@ class GameController extends AppViewModel {
     if (_remainingLives == 0) {
       clock.removeListener(_timerListener);
       clock.stop();
-      GameOverDialog.outOfLives().open();
+      if (currentRawScore >= config.passMark) {
+        GeneralManager.i.gameWon(displayScore);
+        LevelCompletedDialog(levelVm: this).open();
+      } else {
+        GameOverDialog.outOfLives().open();
+      }
     }
   }
 
