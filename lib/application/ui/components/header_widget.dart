@@ -5,6 +5,7 @@ import '../../../common/presentation/presentation.dart';
 import '../../../core/theming/app_colors.dart';
 import '../../../core/theming/sizing_ext.dart';
 import '../../domain/game_data.dart';
+import '../../domain/general_manager.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({
@@ -36,7 +37,7 @@ class HomeHeader extends StatelessWidget {
                   color: AppColors.of(context).textMedium,
                 ),
                 _IconAndCountWidget(
-                  onTap: () {},
+                  onTap: GeneralManager.i.openScoreBoard,
                   svgPath: 'assets/thumb.svg',
                   count: gameData.gameCount,
                   color: AppColors.of(context).textStrong,

@@ -34,19 +34,26 @@ class GameData extends AppViewModel {
     _gameCount = gameCount ?? 0;
     final rawString = sp.getString(dataKey);
     if (rawString == null) return;
-    final rawData = jsonDecode(rawString);
+    final decodedData = jsonDecode(rawString);
 
-    _data = (rawData as Map).map(
+    final parsedData = (decodedData as Map).map(
       (handi, rec) => MapEntry(
-        Hand.values[handi],
-        rec.map(
+        Hand.values[int.parse(handi)],
+        (rec as Map).map(
           (difficultyi, details) => MapEntry(
-            Difficulty.values[difficultyi],
-            details,
+            Difficulty.values[int.parse(difficultyi)],
+            (details as Map).map(
+              (key, value) => MapEntry(
+                int.parse(key),
+                value as int,
+              ),
+            ),
           ),
         ),
       ),
     );
+
+    _data = parsedData;
   }
 
   int getUnlockedLevel(Difficulty difficulty, Hand hand) {
@@ -70,25 +77,33 @@ class GameData extends AppViewModel {
     _updateDb();
   }
 
+  int getScore(GameConfig config) {
+    final score = _data[config.hand]?[config.difficulty]?[config.level] ?? 0;
+    return score;
+  }
+
   Future<void> _updateDb() async {
     final sp = await SharedPreferences.getInstance();
     sp.setInt(gameCountKey, _gameCount);
 
-    final encodedData = _data.map(
+    final cleanedData = _data.map(
       (hand, rec) => MapEntry(
-        hand.index,
+        hand.index.toString(),
         rec.map(
           (difficulty, details) => MapEntry(
-            difficulty.index,
-            details,
+            difficulty.index.toString(),
+            details.map(
+              (key, value) => MapEntry(key.toString(), value),
+            ),
           ),
         ),
       ),
     );
-    // sp.setString(
-    //   dataKey,
-    //   encodedData.toString(),
-    // );
+    final encodedData = jsonEncode(cleanedData);
+    sp.setString(
+      dataKey,
+      encodedData,
+    );
     setState();
   }
 }

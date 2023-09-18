@@ -1,6 +1,7 @@
 import '../../common/presentation/presentation.dart';
 import '../ui/dialogs/select_level_dialog.dart';
 import '../ui/views/game_view.dart';
+import '../ui/views/score_board_view.dart';
 import '../ui/views/select_difficulty_view.dart';
 import '../ui/views/select_hand_view.dart';
 import 'game_config.dart';
@@ -37,7 +38,7 @@ class GeneralManager {
     assert(i >= 1 && i <= 15);
     _level = i;
 
-    final config = GameConfig.fromDifficulty(
+    final config = GameConfig(
       level: _level!,
       hand: _hand!,
       difficulty: _difficulty!,
@@ -64,5 +65,9 @@ class GeneralManager {
   void gameWon(int score) {
     final record = GameRecord(_hand!, _difficulty!, _level!, score);
     GameData.i.recordScore(record);
+  }
+
+  void openScoreBoard() {
+    AppNavigator.main.push(const ScoreBoardView());
   }
 }

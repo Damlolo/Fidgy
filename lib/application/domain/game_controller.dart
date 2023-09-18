@@ -49,7 +49,10 @@ class GameController extends AppViewModel {
       clock.removeListener(_timerListener);
       clock.stop();
 
-      if (currentRawScore > config.passMark) {
+      if (currentRawScore >= config.passMark) {
+        GeneralManager.i.gameWon(displayScore);
+        clock.removeListener(_timerListener);
+        clock.stop();
         LevelCompletedDialog.timeUp(levelVm: this).open();
       } else {
         GameOverDialog.timeUp().open();
@@ -94,12 +97,7 @@ class GameController extends AppViewModel {
     }
   }
 
-  int get numberOfStars {
-    if (currentRawScore == maxScore) return 3;
-    if (currentRawScore >= secondStarScore) return 2;
-    if (currentRawScore >= firstStarScore) return 1;
-    return 0;
-  }
+  int get numberOfStars => config.computeScoreStars(displayScore);
 
   void finish() {
     clock.removeListener(_timerListener);

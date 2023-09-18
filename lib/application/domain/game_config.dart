@@ -6,29 +6,25 @@ class GameConfig {
   final Hand hand;
   final int passMark;
   final int maximumScore;
+  int get secondStarScore => passMark + (maximumScore - passMark) ~/ 2;
 
   GameConfig({
     required this.level,
-    required this.difficulty,
-    required this.maxFailureAllowed,
-    required this.randomnessSeed,
     required this.hand,
+    required this.difficulty,
   })  : passMark = 15 + (level - 1) * 2,
         maximumScore = 25 + (level - 1) * 3,
+        maxFailureAllowed = 5,
+        randomnessSeed = difficulty.randomnessSeed,
         assert(level >= 1 && level <= 15);
 
-  factory GameConfig.fromDifficulty({
-    required int level,
-    required Hand hand,
-    required Difficulty difficulty,
-  }) =>
-      GameConfig(
-        level: level,
-        difficulty: difficulty,
-        randomnessSeed: difficulty.randomnessSeed,
-        maxFailureAllowed: 5,
-        hand: hand,
-      );
+  int computeScoreStars(int score) {
+    final currentRawScore = score ~/ 2;
+    if (currentRawScore == maximumScore) return 3;
+    if (currentRawScore >= secondStarScore) return 2;
+    if (currentRawScore >= passMark) return 1;
+    return 0;
+  }
 }
 
 enum Hand {
